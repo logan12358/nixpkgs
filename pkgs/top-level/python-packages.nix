@@ -2527,6 +2527,10 @@ self: super: with self; {
 
   cachy = callPackage ../development/python-modules/cachy { };
 
+  cadquery-ocp = callPackage ../development/python-modules/cadquery-ocp { };
+
+  cadquery-ocp-novtk = callPackage ../development/python-modules/cadquery-ocp { vtkSupport = false; };
+
   cadwyn = callPackage ../development/python-modules/cadwyn { };
 
   caffe = toPythonModule (

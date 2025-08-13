@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 12fef27a..5b607ec9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -58,12 +58,8 @@ list(GET VTK_INCLUDE_DIR 0 VTK_INCLUDE_DIR)
+ message( STATUS "Include dirs: ${VTK_INCLUDE_DIR}")
+ message( STATUS "Include dirs: ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}")
+ 
+-# OSX
+-if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+-    list( APPEND CXX_INCLUDES -i /opt/usr/local/include/c++/v1/ -i /opt/usr/local/include/ )
+-
+-# Linux-like
+-elseif(NOT PLATFORM STREQUAL "Windows")
++# OSX or Linux-like
++if(NOT PLATFORM STREQUAL "Windows")
+     foreach( inc IN LISTS CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES)
+         list( APPEND CXX_INCLUDES -i ${inc}/ )
+     endforeach()
+@@ -117,7 +113,6 @@ add_custom_command(
+         -i ${VTK_INCLUDE_DIR}/
+         -i ${OPENGL_INCLUDE_DIRS}
+         -i ${RapidJSON_INCLUDE_DIRS}
+-        -i ${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}/include/
+         -p ${CMAKE_SOURCE_DIR}
+         ${CXX_INCLUDES}
+         all ${CMAKE_SOURCE_DIR}/ocp.toml ${PLATFORM}

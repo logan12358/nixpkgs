@@ -1,0 +1,120 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5b607ec9..ef00ce6b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,18 +8,6 @@ set( OCCT_LIB_DIR  CACHE PATH "Location of OCCT sos/dlls")
+ 
+ find_package( OpenGL REQUIRED )
+ find_package( LLVM REQUIRED )
+-find_package( VTK REQUIRED
+-  COMPONENTS
+-    CommonCore
+-    WrappingPythonCore
+-    RenderingCore
+-    RenderingOpenGL2
+-    CommonDataModel
+-    CommonExecutionModel
+-    freetype
+-)
+-
+-message(STATUS "VTK ${VTK_VERSION} found")
+ 
+ find_package( RapidJSON REQUIRED )
+ find_package( Clang REQUIRED )
+@@ -49,13 +37,7 @@ execute_process(
+ )
+ 
+ get_target_property( LIBCLANG_PATH libclang IMPORTED_LOCATION_RELEASE )
+-get_target_property( VTK_INCLUDE_DIR VTK::CommonCore INTERFACE_INCLUDE_DIRECTORIES )
+ 
+-# for some reason I get multiple generator expressions
+-string(REPLACE ">" ">;" VTK_INCLUDE_DIR ${VTK_INCLUDE_DIR})
+-list(GET VTK_INCLUDE_DIR 0 VTK_INCLUDE_DIR)
+-
+-message( STATUS "Include dirs: ${VTK_INCLUDE_DIR}")
+ message( STATUS "Include dirs: ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}")
+ 
+ # OSX or Linux-like
+@@ -110,7 +92,6 @@ add_custom_command(
+         -m bindgen
+         -n ${N_PROC}
+         -l ${LIBCLANG_PATH}
+-        -i ${VTK_INCLUDE_DIR}/
+         -i ${OPENGL_INCLUDE_DIRS}
+         -i ${RapidJSON_INCLUDE_DIRS}
+         -p ${CMAKE_SOURCE_DIR}
+diff --git a/ocp.toml b/ocp.toml
+index af4826ed..02832a23 100644
+--- a/ocp.toml
++++ b/ocp.toml
+@@ -334,10 +334,6 @@ modules = [
+ "Vrml",
+ "VrmlAPI",
+ "RWGltf",
+-"IVtk",
+-"IVtkOCC",
+-"IVtkTools",
+-"IVtkVTK",
+ "DE",
+ "IMeshTools",
+ "IMeshData",
+@@ -1301,29 +1297,6 @@ using rapidjson::BasicOStreamWrapper;"""
+             help = "AddWithRefs supporting python objects"
+             arguments  = ["anent"]
+ 
+-    [Modules.IVtkVTK]
+-
+-        include_header_pre = """#include <vtkRenderer.h>
+-#include "vtk_pybind.h" """
+-
+-    [Modules.IVtkTools]
+-
+-        include_header_pre = """#undef Handle
+-#include <vtkRenderer.h>
+-#include <vtkActor.h>
+-#include <vtkInformationObjectBaseKey.h>"""
+-
+-        exclude_methods = ["IVtkTools_ShapePicker::Pick","IVtkTools_ShapePicker::pick",
+-        "IVtkTools_SubPolyDataFilter::PrintSelf", "IVtkTools_DisplayModeFilter::PrintSelf"]
+-
+-    [Modules.IVtk]
+-
+-        exclude_typedefs = ["IVtk_PointIdList"]
+-
+-    [Modules.IVtkOCC]
+-
+-        exclude_methods = ["IVtkOCC_ShapePickerAlgo::Pick", "IVtkOCC_ViewerSelector::Pick"]
+-
+     [Modules.BinLDrivers]
+ 
+         include_header_pre = "#include <PCDM_ReaderFilter.hxx>"
+diff --git a/templates/CMakeLists.j2 b/templates/CMakeLists.j2
+index 296ed836..570dac99 100755
+--- a/templates/CMakeLists.j2
++++ b/templates/CMakeLists.j2
+@@ -15,16 +15,6 @@ SET(PYTHON_SP_DIR "site-packages" CACHE PATH "Python site-packages directory (fo
+ 
+ find_package( fmt  REQUIRED )
+ find_package( pybind11 REQUIRED )
+-find_package( VTK REQUIRED
+-  COMPONENTS
+-    WrappingPythonCore
+-    RenderingCore
+-    RenderingOpenGL2
+-    CommonDataModel
+-    CommonExecutionModel
+-    freetype
+-)
+-message(STATUS "VTK ${VTK_VERSION} found")
+ find_package( OpenCASCADE REQUIRED )
+ 
+ include_directories( ${PROJECT_SOURCE_DIR} )
+@@ -35,7 +25,7 @@ add_library( {{ name }} MODULE ${CPP_FILES} )
+ target_include_directories( {{ name }} PRIVATE ${OpenCASCADE_INCLUDE_DIR} )
+ 
+ target_link_libraries( {{ name }} PRIVATE ${OpenCASCADE_LIBRARIES} )
+-target_link_libraries( {{ name }} PRIVATE pybind11::pybind11 VTK::WrappingPythonCore VTK::RenderingCore VTK::CommonDataModel VTK::CommonExecutionModel fmt::fmt)
++target_link_libraries( {{ name }} PRIVATE pybind11::pybind11 fmt::fmt)
+ 
+ set_target_properties( {{ name }}
+                        PROPERTIES
