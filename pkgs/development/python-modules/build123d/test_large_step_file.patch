@@ -1,0 +1,18 @@
+diff --git a/tests/test_importers.py b/tests/test_importers.py
+index cee598fa..6d8ce725 100644
+--- a/tests/test_importers.py
++++ b/tests/test_importers.py
+@@ -174,12 +174,7 @@ class ImportSTEP(unittest.TestCase):
+         tests in the class, such as downloading a large file, establishing a database
+         connection, or starting a server.
+         """
+-        url = "https://raw.githubusercontent.com/tpaviot/pythonocc-demos/master/assets/models/as1-oc-214.stp"
+-        temp_dir = tempfile.gettempdir()
+-        file_path = os.path.join(temp_dir, "as1-oc-214.stp")
+-        if not os.path.exists(file_path):
+-            urllib.request.urlretrieve(url, file_path)
+-        cls.large_step_file_path = file_path
++        cls.large_step_file_path = "./as1-oc-214.stp"
+ 
+     def test_single_object(self):
+         export_step(Solid.make_box(1, 1, 1), "test.step")
