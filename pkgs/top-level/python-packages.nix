@@ -2531,6 +2531,8 @@ self: super: with self; {
 
   cadquery-ocp-novtk = callPackage ../development/python-modules/cadquery-ocp { vtkSupport = false; };
 
+  cadquery-ocp-proxy = callPackage ../development/python-modules/cadquery-ocp-proxy { };
+
   cadwyn = callPackage ../development/python-modules/cadwyn { };
 
   caffe = toPythonModule (
